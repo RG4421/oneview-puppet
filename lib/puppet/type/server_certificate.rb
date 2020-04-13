@@ -15,28 +15,24 @@
 ################################################################################
 
 Puppet::Type.newtype(:server_certificate) do
-    desc "server certificate"
-  
+  desc 'server certificate'
+  # :nocov:
+  # Get methods
+  ensurable do
+    defaultvalues
+    newvalue(:import) do
+      provider.import
+    end
     # :nocov:
-    # Get methods
-    ensurable do
-      defaultvalues
-  
-      newvalue(:import) do
-        provider.import
-      end
-      # :nocov:
-    end
-  
-    newparam(:name, namevar: true) do
-      desc 'erver certificate'
-    end
-  
-    newproperty(:data) do
-      desc 'server certificate data hash containing all specifications'
-      validate do |value|
-        raise 'Inserted value for data is not valid' unless value.class == Hash
-      end
+  end
+  newparam(:name, namevar: true) do
+    desc 'erver certificate'
+  end
+  newproperty(:data) do
+    desc 'server certificate data hash containing all specifications'
+    validate do |value|
+      raise 'Inserted value for data is not valid' unless value.class == Hash
     end
   end
+end
   

@@ -43,5 +43,3 @@ Puppet::Type.type(:web_server_certificate).provide :c7000, parent: Puppet::Onevi
     pretty webservercertificate.get_certificate(@client, storage_system_ip)
   end
 end
-
-

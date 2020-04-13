@@ -15,37 +15,32 @@
 ################################################################################
 
 Puppet::Type.newtype(:web_server_certificate) do
-    desc "Web server certificate"
-  
+  desc 'Web server certificate'
+  # :nocov:
+  # Get methods
+  ensurable do
+    defaultvalues
+    newvalue(:create_self_signed) do
+      provider.create_self_signed
+    end
+    newvalue(:create) do
+      provider.create
+    end
+    newvalue(:get_certificate) do
+      provider.get_certificate
+    end
     # :nocov:
-    # Get methods
-    ensurable do
-      defaultvalues
+  end
   
-      newvalue(:create_self_signed) do
-        provider.create_self_signed
-      end
-
-      newvalue(:create) do
-        provider.create
-      end
-
-      newvalue(:get_certificate) do
-        provider.get_certificate
-      end
-
-      # :nocov:
-    end
+  newparam(:name, namevar: true) do
+    desc 'Web server certificate'
+  end
   
-    newparam(:name, namevar: true) do
-      desc 'Web server certificate'
-    end
-  
-    newproperty(:data) do
-      desc 'Web server certificate data hash containing all specifications'
-      validate do |value|
-        raise 'Inserted value for data is not valid' unless value.class == Hash
-      end
+  newproperty(:data) do
+    desc 'Web server certificate data hash containing all specifications'
+    validate do |value|
+      raise 'Inserted value for data is not valid' unless value.class == Hash
     end
   end
+end
   

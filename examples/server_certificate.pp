@@ -20,7 +20,7 @@ server_certificate{'sc1 Create':
     ensure => 'import',
     data   => {
       type               => 'CertificateInfoV2'
-      certificateDetails  => 
+      certificateDetails => 
       {
           'type' => 'CertificateDetailV2',
       }
@@ -31,12 +31,12 @@ server_certificate{'sc2 Update':
     ensure  => 'present',
     require => server_certificate['sc1 Create'],
     data    => {
-      country: 'BR',
-      locality: 'Fortaleza',
-      organization: 'HPE',
-      state: 'Ceara',
-      type: 'CertificateDtoV2',
-      commonName: 'thetemplate.example.com'
+      country      => 'BR',
+      locality     => 'Fortaleza',
+      organization =>'HPE',
+      state        => 'Ceara',
+      type         => 'CertificateDtoV2',
+      commonName   => 'thetemplate.example.com'
     }
 }
 
@@ -45,6 +45,6 @@ server_certificate{'sc3 Delete':
     ensure  => 'absent',
     require => server_certificate['sc2 Update'],
     data    => {
-      type  => 'CertificateInfoV2'
+      type => 'CertificateInfoV2'
     }
 }

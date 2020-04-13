@@ -18,19 +18,34 @@
 
 web_server_certificate{'wc1':
     ensure => 'create_self_signed',
+    data   => {
+      type               => 'CertificateDtoV2',
+      organization       => 'HPE',
+      locality           => 'Fortaleza',
+      state              => 'Ceara',
+      country            => 'BR',
+      commonName         => 'thetemplate.example.com'
+    }
 }
 
 web_server_certificate{'wc2':
     ensure  => 'create',
     require => web_server_certificate['wc1'],
+    data = {
+      country: 'BR',
+      locality: 'Fortaleza',
+      organization: 'HPE',
+      state: 'Ceara',
+      type: 'CertificateDtoV2',
+      commonName: 'thetemplate.example.com'
+  }
 }
 
+
 web_server_certificate{'wc3':
-    ensure  => 'found',
+    ensure  => 'get_certificate',
     require => web_server_certificate['wc2'],
-    data    => {
-      name                    => 'Updated OneViewSDK Test FC Network',
-      autoLoginRedistribution => true,
-      fabricType              => 'FabricAttach',
-    }
+    data = {
+      storage_system_ip: ''
+  }
 }

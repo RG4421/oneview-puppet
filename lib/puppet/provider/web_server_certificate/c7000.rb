@@ -26,9 +26,22 @@ Puppet::Type.type(:web_server_certificate).provide :c7000, parent: Puppet::Onevi
 
   # Creates a new self-signed appliance certificate based on the certificate data provided
   def create_self_signed
-    if @data['vlanIdRange']
-      @resource_type.create_self_signed()
-    else
-      false
-    end
+    resource_type = OneviewSDK.resource_named('WebServerCertificate', api_version, resource_variant)
+    pretty resource_type.create_self_signed
   end
+
+  def create
+    webservercertificate = get_single_resource_instance
+    @options = webservercertificate.create_self_signed
+    @data[:base64Data] = @options.delete('base64Data')
+    pretty webservercertificate.create
+  end
+
+  def get_certificate
+    webservercertificate = get_single_resource_instance
+    storage_system_ip = @data.delete('storage_system_ip')
+    pretty webservercertificate.get_certificate(@client, storage_system_ip)
+  end
+end
+
+

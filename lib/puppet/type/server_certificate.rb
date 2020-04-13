@@ -14,35 +14,26 @@
 # limitations under the License.
 ################################################################################
 
-Puppet::Type.newtype(:web_server_certificate) do
-    desc "Web server certificate"
+Puppet::Type.newtype(:server_certificate) do
+    desc "server certificate"
   
     # :nocov:
     # Get methods
     ensurable do
       defaultvalues
   
-      newvalue(:create_self_signed) do
-        provider.create_self_signed
+      newvalue(:import) do
+        provider.import
       end
-
-      newvalue(:create) do
-        provider.create
-      end
-
-      newvalue(:get_certificate) do
-        provider.get_certificate
-      end
-
       # :nocov:
     end
   
     newparam(:name, namevar: true) do
-      desc 'Web server certificate'
+      desc 'erver certificate'
     end
   
     newproperty(:data) do
-      desc 'Web server certificate data hash containing all specifications'
+      desc 'server certificate data hash containing all specifications'
       validate do |value|
         raise 'Inserted value for data is not valid' unless value.class == Hash
       end

@@ -31,11 +31,9 @@ Puppet::Type.newtype(:web_server_certificate) do
     end
     # :nocov:
   end
-  
   newparam(:name, namevar: true) do
     desc 'Web server certificate'
   end
-  
   newproperty(:data) do
     desc 'Web server certificate data hash containing all specifications'
     validate do |value|
@@ -43,4 +41,3 @@ Puppet::Type.newtype(:web_server_certificate) do
     end
   end
 end
-  

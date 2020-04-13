@@ -35,4 +35,3 @@ Puppet::Type.newtype(:server_certificate) do
     end
   end
 end
-  

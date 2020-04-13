@@ -28,7 +28,7 @@ Puppet::Type.type(:server_certificate).provide :c7000, parent: Puppet::OneviewRe
 
   def import
     @options =  web_server_certificate.get_certificate
-    @data[:certificateDetails][0]:base64Data] = @options.delete('base64Data')
+    @data[:certificateDetails][0][:base64Data] = @options.delete('base64Data')
     super(:create)
   end
 end

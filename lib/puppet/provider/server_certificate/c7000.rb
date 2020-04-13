@@ -22,12 +22,12 @@ Puppet::Type.type(:server_certificate).provide :c7000, parent: Puppet::OneviewRe
 
   confine feature: :oneview
   confine true: login[:hardware_variant] == 'C7000'
-  server_certificate = OneviewSDK.resource_named('ServerCertificate', api_version, resource_variant)
-  web_server_certificate = OneviewSDK.resource_named('WebServerCertificate', api_version, resource_variant)
+
   mk_resource_methods
 
   def import
-    @options =  web_server_certificate.get_certificate
+    web_server_certificate = OneviewSDK.resource_named('WebServerCertificate', api_version, resource_variant)
+    @options = web_server_certificate.get_certificate
     @data[:certificateDetails][0][:base64Data] = @options.delete('base64Data')
     super(:create)
   end

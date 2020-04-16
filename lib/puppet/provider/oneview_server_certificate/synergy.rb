@@ -14,7 +14,7 @@
 # limitations under the License.
 ################################################################################
 
-Puppet::Type.type(:server_certificate).provide :synergy, parent: :c7000 do
+Puppet::Type.type(:oneview_server_certificate).provide :synergy, parent: :c7000 do
   desc 'Provider for Server Certificate using the Synergy variant of the OneView API'
   confine feature: :oneview
   confine true: login[:hardware_variant] == 'Synergy'

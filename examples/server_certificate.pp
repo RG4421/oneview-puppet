@@ -16,35 +16,30 @@
 
 # NOTE: As with all resources, the found ensurable accepts a data as an optional filter field.
 
-server_certificate{'sc1 Create':
-    ensure => 'import',
+server_certificate{'sc1 Get Certificates from RemoteIP':
+    ensure => 'get_certificate',
     data   => {
-      type               => 'CertificateInfoV2'
-      certificateDetails => 
-      {
-          'type' => 'CertificateDetailV2',
-      }
+      remoteIp => '172.18.13.11'
+    }
+}
+
+server_certificate{'sc2 Import':
+    ensure  => 'import',
+    require => server_certificate['sc1 Get Certificates from RemoteIP'],
+    data    => {
+      storage_system_ip => '172.18.11.11'
     }
 }
 
 server_certificate{'sc2 Update':
-    ensure  => 'present',
-    require => server_certificate['sc1 Create'],
-    data    => {
-      country      => 'BR',
-      locality     => 'Fortaleza',
-      organization =>'HPE',
-      state        => 'Ceara',
-      type         => 'CertificateDtoV2',
-      commonName   => 'thetemplate.example.com'
-    }
+    ensure  => 'update',
+    require => server_certificate['sc2 Import']
 }
 
-
 server_certificate{'sc3 Delete':
-    ensure  => 'absent',
+    ensure  => 'remove',
     require => server_certificate['sc2 Update'],
     data    => {
-      type => 'CertificateInfoV2'
+      alias => '172.18.11.11'
     }
 }

@@ -14,19 +14,28 @@
 # limitations under the License.
 ################################################################################
 
-Puppet::Type.newtype(:server_certificate) do
-  desc 'server certificate'
+Puppet::Type.newtype(:oneview_server_certificate) do
+  desc 'Server Certificate'
   # :nocov:
   # Get methods
   ensurable do
     defaultvalues
+    newvalue(:get_certificate) do
+      provider.get_certificate
+    end
     newvalue(:import) do
       provider.import
+    end
+    newvalue(:update) do
+      provider.update
+    end
+    newvalue(:remove) do
+      provider.remove
     end
     # :nocov:
   end
   newparam(:name, namevar: true) do
-    desc 'erver certificate'
+    desc 'Server Certificate'
   end
   newproperty(:data) do
     desc 'server certificate data hash containing all specifications'

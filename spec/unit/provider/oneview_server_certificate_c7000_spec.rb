@@ -51,8 +51,8 @@ describe provider_class, unit: true do
     end
 
     it 'should be able to import the certificate signing request' do
-        allow_any_instance_of(resource_type).to receive(:import).and_return('Test')
-        provider.exists?
+      allow_any_instance_of(resource_type).to receive(:import).and_return('Test')
+      provider.exists?
     end
 
     it 'should be able to get certificates' do

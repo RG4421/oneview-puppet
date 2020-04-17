@@ -21,7 +21,7 @@ api_version = 800
 resource_type = OneviewSDK.resource_named(:ServerCertificate, api_version, :C7000)
 
 describe provider_class, unit: true do
-  include_context 'shared context'
+  include_context 'shared context Oneview API 800'
 
   let(:resource) do
     Puppet::Type.type(:oneview_server_certificate).new(
@@ -50,13 +50,13 @@ describe provider_class, unit: true do
       expect(provider).to be_an_instance_of Puppet::Type.type(:oneview_server_certificate).provider(:c7000)
     end
 
-    it 'should be able to import certificates' do
-      allow(resource_type).to receive(:find_by).and_return([test])
-      expect(provider.import).to be
+    it 'should be able to import the certificate signing request' do
+        allow_any_instance_of(resource_type).to receive(:import).and_return('Test')
+        provider.exists?
     end
 
     it 'should be able to get certificates' do
-      allow_any_instance_of(resource_type).to receive(:name_servers).and_return(test)
+      allow_any_instance_of(resource_type).to receive(:get_certificate).and_return('Test')
       expect(provider.get_certificate).to be
     end
 

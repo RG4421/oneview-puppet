@@ -60,12 +60,12 @@ describe provider_class, unit: true do
       expect(provider.get_certificate).to be
     end
 
-    it 'should be able to get the types filtered by a name' do
+    it 'should be able to update certificate' do
       allow(resource_type).to receive(:update).and_return(test)
       expect(provider.update).to be
     end
 
-    it 'should be able to get the statistics' do
+    it 'should be able to remove certificate' do
       allow_any_instance_of(resource_type).to receive(:remove).and_return([])
       expect(provider.remove).to be
     end

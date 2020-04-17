@@ -39,7 +39,7 @@ RSpec.shared_context 'shared context Image Streamer', a: :b do
   end
 end
 
-RSpec.shared_context 'shared context Server Certificate', a: :b do
+RSpec.shared_context 'shared context Oneview API 800', a: :b do
   before :each do
     api_version = 800
     options = { url: 'https://oneview.example.com', user: 'Administrator', password: 'secret123', api_version: api_version }

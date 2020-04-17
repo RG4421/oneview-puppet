@@ -27,9 +27,9 @@ Puppet::Type.type(:oneview_server_certificate).provide :c7000, parent: Puppet::O
 
   def get_certificate
     server_certificate = OneviewSDK.resource_named('ServerCertificate', api_version)
-    remote_ip = @data.delete('remote_ip')
     server_certificate.get_certificate
   end
+
   def import
     storage_system_ip = @data.delete('storage_system_ip')
     server_certificate = OneviewSDK.resource_named('ServerCertificate', storage_system_ip)
@@ -42,6 +42,7 @@ Puppet::Type.type(:oneview_server_certificate).provide :c7000, parent: Puppet::O
     ]
     server_certificate.import
   end
+
   def update
     server_certificate = OneviewSDK.resource_named('ServerCertificate', api_version)
     @options = server_certificate.get_certificate
@@ -53,18 +54,18 @@ Puppet::Type.type(:oneview_server_certificate).provide :c7000, parent: Puppet::O
     ]
     server_certificate.update
   end
+
   def remove
     storage_system_ip = @data.delete('alias')
     server_certificate = OneviewSDK.resource_named('ServerCertificate', storage_system_ip)
     server_certificate.remove
   end
+
   def self.api_version
     800
   end
+
   def self.resource_name
     'ServerCertificate'
   end
 end
-
-
-

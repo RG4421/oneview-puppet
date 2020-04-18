@@ -17,7 +17,6 @@
 require 'spec_helper'
 
 provider_class = Puppet::Type.type(:oneview_server_certificate).provider(:c7000)
-api_version = 600
 resource_type = OneviewSDK.resource_named(:ServerCertificate, 600, :C7000)
 
 describe provider_class, unit: true do

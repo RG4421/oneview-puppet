@@ -40,7 +40,6 @@ RSpec.shared_context 'shared context Image Streamer', a: :b do
 end
 
 RSpec.shared_context 'shared context Oneview API 800', a: :b do
-  ENV['ONEVIEW_AUTH_FILE'] = 'spec/support/fixtures/unit/provider/login_no_apiversion.json'
   before :each do
     api_version = 600
     options = { url: 'https://oneview.example.com', user: 'Administrator', password: 'secret123', api_version: api_version }

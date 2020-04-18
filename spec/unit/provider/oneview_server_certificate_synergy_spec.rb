@@ -52,6 +52,9 @@ describe provider_class, unit: true do
   end
 
   context 'given the minimum parameters' do
+    before(:each) do
+      provider.exists?
+    end
     let(:resource) do
       Puppet::Type.type(:oneview_server_certificate).new(
         name: 'ServerCertificate',
@@ -63,11 +66,7 @@ describe provider_class, unit: true do
         provider: 'c7000'
       )
     end
-   
-    before(:each) do
-      provider.exists?
-    end
-
+    
     it 'should be able to get the certificate request' do
       provider.exists?
       expect(provider.get_certificate).to be

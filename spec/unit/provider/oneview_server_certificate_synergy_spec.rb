@@ -66,7 +66,6 @@ describe provider_class, unit: true do
         provider: 'c7000'
       )
     end
-    
     it 'should be able to get the certificate request' do
       provider.exists?
       expect(provider.get_certificate).to be

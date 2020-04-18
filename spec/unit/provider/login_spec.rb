@@ -30,7 +30,7 @@ describe 'login', unit: true do
         user:             'administrator',
         password:         'secret123',
         ssl_enabled:      true,
-        api_version:      600,
+        api_version:      300,
         log_level:        'debug',
         hardware_variant: 'Synergy'
       }
@@ -43,7 +43,7 @@ describe 'login', unit: true do
         user:             'administrator',
         password:         'secret123',
         ssl_enabled:      true,
-        api_version:      600,
+        api_version:      300,
         log_level:        'debug',
         hardware_variant: 'C7000'
       }

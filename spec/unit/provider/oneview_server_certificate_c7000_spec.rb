@@ -39,17 +39,6 @@ describe provider_class, unit: true do
 
   let(:test) { resource_type.new(@client, resource['data']) }
 
-  context 'given the min parameters' do
-    before(:each) do
-      provider.exists?
-      allow(resource_type).to receive(:find_by)
-    end
-
-    it 'should be an instance of the provider Ruby' do
-      expect(provider).to be_an_instance_of Puppet::Type.type(:oneview_server_certificate).provider(:c7000)
-    end
-  end
-
   context 'given the minimum parameters' do
     let(:resource) do
       Puppet::Type.type(:oneview_server_certificate).new(
@@ -68,6 +57,7 @@ describe provider_class, unit: true do
     end
 
     it 'should be able to get the certificate request' do
+      allow_any_instance_of(resource_type).to receive(:get_certificate)
       provider.exists?
       expect(provider.get_certificate).to be
     end

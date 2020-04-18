@@ -18,7 +18,7 @@ require 'spec_helper'
 
 provider_class = Puppet::Type.type(:oneview_server_certificate).provider(:c7000)
 api_version = 600
-resource_type = OneviewSDK.resource_named(:ServerCertificate, api_version, :C7000)
+resource_type = OneviewSDK.resource_named(:ServerCertificate, 600, :C7000)
 
 describe provider_class, unit: true do
   include_context 'shared context Oneview API 800'
@@ -42,8 +42,8 @@ describe provider_class, unit: true do
 
   context 'given the min parameters' do
     before(:each) do
-      allow(resource_type).to receive(:find_by).and_return([test])
       provider.exists?
+      allow(resource_type).to receive(:find_by)
     end
 
     it 'should be an instance of the provider Ruby' do

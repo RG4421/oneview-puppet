@@ -28,7 +28,7 @@ describe provider_class, unit: true do
       name: 'sc1',
       data:
           {
-            'type' => 'CertificateInfoV2'
+            'aliasName' => 'hostname-Test'
           },
       provider: 'synergy'
     )
@@ -50,24 +50,26 @@ describe provider_class, unit: true do
       expect(provider).to be_an_instance_of Puppet::Type.type(:oneview_server_certificate).provider(:synergy)
     end
 
-    it 'should be able to import certificates' do
-      allow(resource_type).to receive(:find_by).and_return([test])
-      expect(provider.import).to be
+  context 'given the minimum parameters' do
+    let(:resource) do
+      Puppet::Type.type(:oneview_server_certificate).new(
+        name: 'ServerCertificate',
+        ensure: 'get_certificate',
+        data:
+            {
+              'remoteIp' => '172.18.13.11'
+            },
+        provider: 'c7000'
+      )
+    end
+    
+    before(:each) do
+        provider.exists?
     end
 
-    it 'should be able to get certificates' do
-      allow_any_instance_of(resource_type).to receive(:get_certificate).and_return('test')
+    it 'should be able to get the certificate request' do
+      provider.exists?
       expect(provider.get_certificate).to be
-    end
-
-    it 'should be able to update certificate' do
-      allow(resource_type).to receive(:update).and_return(test)
-      expect(provider.update).to be
-    end
-
-    it 'should be able to update certificate' do
-      allow_any_instance_of(resource_type).to receive(:remove).and_return([])
-      expect(provider.remove).to be
     end
   end
 end

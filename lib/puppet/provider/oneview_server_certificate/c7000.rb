@@ -62,7 +62,7 @@ Puppet::Type.type(:oneview_server_certificate).provide :c7000, parent: Puppet::O
   end
 
   def self.api_version
-    800
+    600
   end
 
   def self.resource_name

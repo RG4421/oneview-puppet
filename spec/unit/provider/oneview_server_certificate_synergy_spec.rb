@@ -63,7 +63,7 @@ describe provider_class, unit: true do
         provider: 'c7000'
       )
     end
-    
+   
     before(:each) do
       provider.exists?
     end

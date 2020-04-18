@@ -3,7 +3,7 @@
   "user": "Administrator",
   "password": "secret123",
   "ssl_enabled": "true",
-  "api_version": 300,
+  "api_version": 600,
   "log_level": "info",
   "hardware_variant": "C7000",
   "enclosure_ip": "172.18.1.13",

@@ -14,31 +14,29 @@
 # limitations under the License.
 ################################################################################
 
-# NOTE: As with all resources, the found ensurable accepts a data as an optional filter field.
-
-server_certificate{'sc1 Get Certificates from RemoteIP':
+oneview_server_certificate{'sc1 Get Certificates from RemoteIP':
     ensure => 'get_certificate',
     data   => {
       remoteIp => '172.18.13.11'
     }
 }
 
-server_certificate{'sc2 Import':
+oneview_server_certificate{'sc2 Import':
     ensure  => 'import',
-    require => server_certificate['sc1 Get Certificates from RemoteIP'],
+    require => Oneview_server_certificate['sc1 Get Certificates from RemoteIP'],
     data    => {
       storage_system_ip => '172.18.11.11'
     }
 }
 
-server_certificate{'sc2 Update':
+oneview_server_certificate{'sc2 Update':
     ensure  => 'update',
-    require => server_certificate['sc2 Import']
+    require => Oneview_server_certificate['sc2 Import']
 }
 
-server_certificate{'sc3 Delete':
+oneview_server_certificate{'sc3 Delete':
     ensure  => 'remove',
-    require => server_certificate['sc2 Update'],
+    require => Oneview_server_certificate['sc2 Update'],
     data    => {
       alias => '172.18.11.11'
     }

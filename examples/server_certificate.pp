@@ -14,30 +14,43 @@
 # limitations under the License.
 ################################################################################
 
-oneview_server_certificate{'sc1 Get Certificates from RemoteIP':
+# Retrives certificate from specified IpAddress as 'AliasName'
+oneview_server_certificate{'sc1 Retrieve Certificates':
+    ensure => 'retrieve',
+    data   => {
+      aliasName => '172.18.13.11'
+    }
+}
+
+# Gets Certificate from remoteIp
+oneview_server_certificate{'Get Certificates from RemoteIP':
     ensure => 'get_certificate',
     data   => {
-      remoteIp => '172.18.13.11'
+      remoteIp  => '172.18.13.11',
+      aliasName => '172.18.13.11'
     }
 }
 
-oneview_server_certificate{'sc2 Import':
-    ensure  => 'import',
-    require => Oneview_server_certificate['sc1 Get Certificates from RemoteIP'],
-    data    => {
-      storage_system_ip => '172.18.11.11'
+oneview_server_certificate{'Import Certificates from RemoteIP':
+    ensure => 'import',
+    data   => {
+      remoteIp  => '172.18.13.11',
+      aliasName => '172.18.13.11'
     }
 }
 
-oneview_server_certificate{'sc2 Update':
-    ensure  => 'update',
-    require => Oneview_server_certificate['sc2 Import']
+oneview_server_certificate{'Update Certificates from RemoteIP':
+    ensure => 'present',
+    data   => {
+      remoteIp  => '172.18.13.11',
+      aliasName => '172.18.13.11'
+    }
 }
 
-oneview_server_certificate{'sc3 Delete':
-    ensure  => 'remove',
-    require => Oneview_server_certificate['sc2 Update'],
-    data    => {
-      alias => '172.18.11.11'
+oneview_server_certificate{'Removes Certificates from RemoteIP':
+    ensure => 'remove',
+    data   => {
+      remoteIp  => '172.18.13.11',
+      aliasName => '172.18.13.11'
     }
 }

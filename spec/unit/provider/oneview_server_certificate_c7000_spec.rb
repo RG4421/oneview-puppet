@@ -17,17 +17,19 @@
 require 'spec_helper'
 
 provider_class = Puppet::Type.type(:oneview_server_certificate).provider(:c7000)
-resource_type = OneviewSDK.resource_named(:ServerCertificate, 600, :C7000)
+api_version = 600
+resource_type = OneviewSDK.resource_named(:ServerCertificate, api_version, :C7000)
 
 describe provider_class, unit: true do
   include_context 'shared context Oneview API 800'
 
   let(:resource) do
     Puppet::Type.type(:oneview_server_certificate).new(
-      name: 'sc1',
+      name: 'ServerCertificate',
+      ensure: 'get_certificate',
       data:
           {
-            'aliasName' => 'hostname-Test'
+            'aliasName' => '172.18.13.11'
           },
       provider: 'c7000'
     )
@@ -40,26 +42,67 @@ describe provider_class, unit: true do
   let(:test) { resource_type.new(@client, resource['data']) }
 
   context 'given the minimum parameters' do
-    let(:resource) do
-      Puppet::Type.type(:oneview_server_certificate).new(
-        name: 'ServerCertificate',
-        ensure: 'get_certificate',
-        data:
-            {
-              'remoteIp' => '172.18.13.11'
-            },
-        provider: 'c7000'
-      )
+    before(:each) do
+      allow_any_instance_of(resource_type).to receive(:find_by).and_return([test])
+      allow_any_instance_of(resource_type).to receive(:retrieve!).and_return(true)
+      allow_any_instance_of(resource_type).to receive(:like?).and_return(true)
+      provider.exists?
     end
 
-    before(:each) do
-      provider.exists?
+    it 'should be an instance of the provider oneview_server_certificate' do
+      expect(provider).to be_an_instance_of Puppet::Type.type(:oneview_server_certificate).provider(:c7000)
     end
 
     it 'should be able to get the certificate request' do
-      allow_any_instance_of(resource_type).to receive(:get_certificate)
-      provider.exists?
+      resource['data']['remoteIp'] = '172.18.13.11'
+      allow_any_instance_of(resource_type).to receive(:get_certificate).and_return('test')
       expect(provider.get_certificate).to be
     end
+
+    it 'should be able to retrieve certificates' do
+      resource['data']['remoteIp'] = '172.18.13.11'
+      allow_any_instance_of(resource_type).to receive(:retrieve!).and_return(true)
+      expect(provider.retrieve).to be
+    end
+
+    it 'should be able to parse data' do
+      resource['data']['remoteIp'] = '172.18.13.11'
+      expected_output = {
+        'aliasName' => '172.18.13.11',
+        'remoteIp' => '172.18.13.11',
+        'type' => 'CertificateInfoV2',
+        'certificateDetails' =>
+        [{
+          'type' => 'CertificateDetailV2',
+          'base64Data' => 'some certificate data'
+        }]
+      }
+      allow_any_instance_of(resource_type).to receive(:get_certificate).and_return(expected_output)
+      expect(provider.parse_data).to be
+    end
+
+    it 'should be able to remove certificates' do
+      resource['data']['remoteIp'] = '172.18.13.11'
+      allow_any_instance_of(resource_type).to receive(:remove).and_return(true)
+      expect(provider.remove).to be
+    end
+
+    # it 'should be able to import certificates' do
+    #   resource['data']['remoteIp'] = '172.18.13.11'
+    #   expected_output = {
+    #     'aliasName' => '172.18.13.11',
+    #     'remoteIp' => '172.18.13.11',
+    #     'type' => 'CertificateInfoV2',
+    #     'certificateDetails' =>
+    #     [{
+    #       'type' => 'CertificateDetailV2',
+    #       'base64Data' => 'some certificate data'
+    #     }]
+    #   }
+    #   allow_any_instance_of(resource_type).to receive(:import).and_return(true)
+    #   allow_any_instance_of(resource_type).to receive(:get_certificate).and_return(expected_output)
+    #   allow_any_instance_of(resource_type).to receive(:create).and_return(test)
+    #   expect(provider.import).to be
+    # end
   end
 end

@@ -1,103 +1,56 @@
-################################################################################
-# (C) Copyright 2020 Hewlett Packard Enterprise Development LP
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# You may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-################################################################################
+# frozen_string_literal: true
 
-require 'simplecov' # This needs to be imported before codecov/coveralls
-require 'codecov'
-require 'coveralls'
-require 'oneview-sdk'
-require 'pry'
-require 'puppet'
-require 'rspec'
-require 'rspec-puppet'
-require 'rspec-puppet/spec_helper'
+require 'puppetlabs_spec_helper/module_spec_helper'
+require 'rspec-puppet-facts'
 
-require_relative 'shared_context'
-require_relative 'support/fake_response'
+require 'spec_helper_local' if File.file?(File.join(File.dirname(__FILE__), 'spec_helper_local.rb'))
 
-provider_path = 'lib/puppet/provider'
-type_path = 'lib/puppet/type'
+include RspecPuppetFacts
 
-Coveralls.wear!
+default_facts = {
+  puppetversion: Puppet.version,
+  facterversion: Facter.version,
+}
 
-SimpleCov.formatters = [SimpleCov::Formatter::Codecov, Coveralls::SimpleCov::Formatter, SimpleCov::Formatter::HTMLFormatter]
+default_fact_files = [
+  File.expand_path(File.join(File.dirname(__FILE__), 'default_facts.yml')),
+  File.expand_path(File.join(File.dirname(__FILE__), 'default_module_facts.yml')),
+]
 
-SimpleCov.profiles.define 'unit' do
-  add_filter 'spec/'
-  add_group 'Providers', provider_path
-  add_group 'Types', type_path
-  minimum_coverage 95 # TODO: bump up as we increase coverage. Goal: 100%
-  minimum_coverage_by_file 70 # TODO: bump up as we increase coverage. Goal: 85%
-end
+default_fact_files.each do |f|
+  next unless File.exist?(f) && File.readable?(f) && File.size?(f)
 
-SimpleCov.profiles.define 'all' do
-  add_filter 'spec/'
-  add_group 'Providers', provider_path
-  add_group 'Types', type_path
-end
-
-RSpec.configure do |config|
-  # Rspec-puppet specific configuration
-  config.module_path  = File.expand_path(File.join(File.dirname(__FILE__), 'fixtures/modules'))
-  config.manifest_dir = File.expand_path(File.join(File.dirname(__FILE__), 'fixtures/manifests'))
-
-  # Rspec output Configurations
-  config.color = true # Use color in STDOUT
-  config.tty = true # Use color not only in STDOUT but also in pagers and files
-  config.formatter = :documentation # Use the specified formatter (:progress, :html, :textmate)
-
-  # Sort integration tests
-  if config.filter_manager.inclusions.rules[:integration]
-    config.register_ordering(:global) do |items|
-      items.sort_by { |i| [(i.metadata[:type] || 0), (i.metadata[:sequence] || 100)] }
-    end
-  end
-
-  # Set fake login files for unit tests
-  if config.filter_manager.inclusions.rules[:unit]
-    ENV['IMAGE_STREAMER_AUTH_FILE'] = 'spec/support/fixtures/unit/provider/login_image_streamer.json'
-    ENV['ONEVIEW_AUTH_FILE'] = 'spec/support/fixtures/unit/provider/login_no_provider.json'
-    SimpleCov.start 'unit' # Runs simplecov with minimum coverage relating to unit tests
-  else # Run both
-    SimpleCov.start 'all' # Runs simplecov with no coverage restrictions, applicable to integration tests
-  end
-
-  config.before(:each) do
-    unless config.filter_manager.inclusions.rules[:integration] # If not using the integration flag, sets the mocks required for unit tests
-      # Mock appliance version and login api requests, as well as loading trusted certs
-      allow_any_instance_of(OneviewSDK::Client).to receive(:appliance_api_version).and_return(1200)
-      allow_any_instance_of(OneviewSDK::ImageStreamer::Client).to receive(:appliance_i3s_api_version).and_return(600)
-      allow_any_instance_of(OneviewSDK::Client).to receive(:login).and_return('secretToken')
-      allow(OneviewSDK::SSLHelper).to receive(:load_trusted_certs).and_return(nil)
-    end
-
-    # Clear environment variables
-    %w(ONEVIEWSDK_URL ONEVIEWSDK_USER ONEVIEWSDK_PASSWORD ONEVIEWSDK_TOKEN ONEVIEWSDK_SSL_ENABLED).each do |name|
-      ENV[name] = nil
-    end
-  end
-
-  # Redirect stderr and stdout to Null
-  original_stderr = $stderr
-  original_stdout = $stdout
-  config.before(:all) do
-    $stderr = File.open(File::NULL, 'w')
-    $stdout = File.open(File::NULL, 'w')
-  end
-  config.after(:all) do
-    $stderr = original_stderr
-    $stdout = original_stdout
+  begin
+    default_facts.merge!(YAML.safe_load(File.read(f), [], [], true))
+  rescue => e
+    RSpec.configuration.reporter.message "WARNING: Unable to load #{f}: #{e}"
   end
 end
+
+# read default_facts and merge them over what is provided by facterdb
+default_facts.each do |fact, value|
+  add_custom_fact fact, value
+end
+
+RSpec.configure do |c|
+  c.default_facts = default_facts
+  c.before :each do
+    # set to strictest setting for testing
+    # by default Puppet runs at warning level
+    Puppet.settings[:strict] = :warning
+  end
+  c.filter_run_excluding(bolt: true) unless ENV['GEM_BOLT']
+  c.after(:suite) do
+  end
+end
+
+# Ensures that a module is defined
+# @param module_name Name of the module
+def ensure_module_defined(module_name)
+  module_name.split('::').reduce(Object) do |last_module, next_module|
+    last_module.const_set(next_module, Module.new) unless last_module.const_defined?(next_module, false)
+    last_module.const_get(next_module, false)
+  end
+end
+
+# 'spec_overrides' from sync.yml will appear below this line
